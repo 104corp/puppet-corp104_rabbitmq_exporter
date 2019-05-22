@@ -43,6 +43,15 @@
 # Copyright 2017 Your name here, unless otherwise noted.
 #
 class corp104_rabbitmq_exporter (
+  String    $rabbit_url,
+  String    $rabbit_user,
+  String    $rabbit_password,
+  String    $queues_include_regex,
+  String    $queues_exclude_regex,
+  String    $vhosts_include_regex,
+  String    $vhosts_exclude_regex,
+  Array[String] $rabbit_capabilities,
+  Array[String] $rabbit_exporters,
   String    $package_name,
   String    $version,
   String    $package_ensure,
