@@ -6,6 +6,7 @@ class corp104_rabbitmq_exporter::install (
   String    $package_name      = $corp104_rabbitmq_exporter::package_name,
   String    $version           = $corp104_rabbitmq_exporter::version,
   String    $package_ensure    = 'installed',
+  String    $package_dir       = '/opt',
   String    $install_method    = 'url',
   String    $download_url      = $corp104_rabbitmq_exporter::download_url,
   String    $download_extension = 'tar.gz',
@@ -19,7 +20,7 @@ class corp104_rabbitmq_exporter::install (
     default => $http_proxy,
   }
   # rabbitmq_exporter-1.0.0-RC5.linux-amd64.tar.gz
-  $install_dir = "/opt/${package_name}-${version}.linux-${facts['architecture']}"
+  $install_dir = "${package_dir}/${package_name}-${version}.linux-${facts['architecture']}"
 
   case $install_method {
     'url': {
@@ -34,20 +35,20 @@ class corp104_rabbitmq_exporter::install (
         source          => $download_url,
         creates         => "${install_dir}/${package_name}",
         extract         => true,
-        extract_path    => "${install_dir}",
+        extract_path    => $package_dir,
         proxy_server    => $proxy_server,
         checksum_verify => false,
         cleanup         => true,
       }
       -> file {
-        "/opt/${package_name}-${version}.linux-${facts['architecture']}/${package_name}":
+        "${install_dir}/${package_name}":
           owner => 'root',
           group => 0, # 0 instead of root because OS X uses "wheel".
           mode  => '0555';
         "${bin_dir}/${service_name}":
           ensure => link,
           notify => Service[$service_name],
-          target => "/opt/${package_name}-${version}.linux-${facts['architecture']}/${package_name}",
+          target => "${install_dir}/${package_name}",
       }
     }
     'package': {
